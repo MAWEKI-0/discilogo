@@ -32,3 +32,16 @@ ALTER TABLE logs ENABLE ROW LEVEL SECURITY;
 -- Create policies to allow all operations (for simplicity - you can make this more restrictive later)
 CREATE POLICY "Allow all operations on habits" ON habits FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Allow all operations on logs" ON logs FOR ALL USING (true) WITH CHECK (true);
+
+-- Create notes table
+CREATE TABLE IF NOT EXISTS notes (
+    id BIGSERIAL PRIMARY KEY,
+    content TEXT NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Enable RLS and create policy for notes
+ALTER TABLE notes ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow all operations on notes" ON notes FOR ALL USING (true) WITH CHECK (true);
+

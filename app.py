@@ -187,7 +187,7 @@ st.markdown("<h1 style='text-align: center; margin-bottom: 0.5rem;'>🎯 Discilo
 st.markdown("<p style='text-align: center; color: #888; margin-bottom: 1.5rem;'>Daily Accountability</p>", unsafe_allow_html=True)
 
 # Create tabs
-tab1, tab2, tab3 = st.tabs(["📋 Daily Check", "⚙️ Manage", "📊 Data"])
+tab1, tab2, tab3, tab4 = st.tabs(["📋 Daily Check", "⚙️ Manage", "📊 Data", "📝 Notes"])
 
 
 # ============== TAB 1: DAILY CHECK ==============
@@ -374,3 +374,47 @@ with tab3:
     with col2:
         active_count = len(db.get_active_habits())
         st.metric("Active Habits", f"📋 {active_count}")
+
+
+# ============== TAB 4: NOTES ==============
+with tab4:
+    st.markdown("### 📝 Quick Notes")
+    
+    # Add new note
+    with st.form("add_note_form", clear_on_submit=True):
+        new_note = st.text_area(
+            "Write a note...",
+            placeholder="Capture a thought, reflection, or reminder...",
+            label_visibility="collapsed",
+            height=100
+        )
+        submitted = st.form_submit_button("💾 Save Note", use_container_width=True)
+        
+        if submitted and new_note.strip():
+            db.add_note(new_note.strip())
+            st.success("✅ Note saved!")
+            st.rerun()
+        elif submitted:
+            st.warning("Please write something first.")
+    
+    st.markdown("---")
+    
+    # Display existing notes
+    notes = db.get_all_notes()
+    
+    if not notes:
+        st.info("No notes yet. Add one above!")
+    else:
+        for note in notes:
+            with st.container():
+                # Note card styling
+                st.markdown(f"""
+                <div style="background: #1a1f2e; padding: 1rem; border-radius: 12px; margin-bottom: 0.8rem; border-left: 3px solid #00d4aa;">
+                    <p style="margin: 0; color: #fafafa; white-space: pre-wrap;">{note['content']}</p>
+                    <p style="margin: 0.5rem 0 0 0; color: #666; font-size: 0.8rem;">{note['created_at'][:10]}</p>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                if st.button("🗑️ Delete", key=f"del_note_{note['id']}", help="Delete this note"):
+                    db.delete_note(note['id'])
+                    st.rerun()

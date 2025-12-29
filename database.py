@@ -165,3 +165,40 @@ def get_streak() -> int:
             break
     
     return streak
+
+
+# ============== NOTES CRUD ==============
+
+def add_note(content: str) -> int:
+    """Add a new note and return its ID."""
+    client = get_client()
+    result = client.table("notes").insert({
+        "content": content
+    }).execute()
+    return result.data[0]["id"]
+
+
+def get_all_notes() -> list[dict]:
+    """Get all notes, most recent first."""
+    client = get_client()
+    result = client.table("notes")\
+        .select("id, content, created_at, updated_at")\
+        .order("created_at", desc=True)\
+        .execute()
+    return result.data
+
+
+def update_note(note_id: int, content: str):
+    """Update a note's content."""
+    client = get_client()
+    client.table("notes")\
+        .update({"content": content, "updated_at": "now()"})\
+        .eq("id", note_id)\
+        .execute()
+
+
+def delete_note(note_id: int):
+    """Delete a note."""
+    client = get_client()
+    client.table("notes").delete().eq("id", note_id).execute()
+
