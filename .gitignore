@@ -1,0 +1,15 @@
+# Secrets (NEVER commit this)
+.streamlit/secrets.toml
+
+# Local SQLite database (deprecated)
+discipline.db
+
+# Python
+__pycache__/
+*.py[cod]
+.env
+venv/
+
+# IDE
+.vscode/
+.idea/
